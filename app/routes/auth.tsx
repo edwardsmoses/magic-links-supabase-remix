@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { createSupabaseServerClient } from "~/supabase/supabase.server";
 
@@ -12,6 +12,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       emailRedirectTo: "http://localhost:5174/auth-callback",
     },
   });
+  console.log('what is error', error);
+  
   if (error) {
     return json({ success: false }, { headers });
   }
@@ -20,6 +22,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 const SignIn = () => {
   const actionData = useActionData<typeof action>();
+  const { state } = useNavigation();
 
   return (
     <div className="bg-orange-50 h-screen flex justify-center items-center">
@@ -47,9 +50,10 @@ const SignIn = () => {
 
             <button
               type="submit"
+              disabled={state === "submitting"}
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-              Sign in
+              {state === "submitting" ? "Signing in..." : "Sign in"}
             </button>
           </div>
         </Form>
